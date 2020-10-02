@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VidlyCore.Data;
 
 namespace VidlyCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201002120808_AddIsSubscribedToCustomer")]
+    partial class AddIsSubscribedToCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -225,38 +227,12 @@ namespace VidlyCore.Migrations
                     b.Property<bool>("IsSubscribedToNewsletter")
                         .HasColumnType("bit");
 
-                    b.Property<byte>("MembershipTypeId")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MembershipTypeId");
 
                     b.ToTable("Customers");
-                });
-
-            modelBuilder.Entity("VidlyCore.Models.MembershipType", b =>
-                {
-                    b.Property<byte>("Id")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("DiscountRate")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("DurationInMonths")
-                        .HasColumnType("tinyint");
-
-                    b.Property<short>("SignUpFee")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MembershipType");
                 });
 
             modelBuilder.Entity("VidlyCore.Models.Movie", b =>
@@ -321,15 +297,6 @@ namespace VidlyCore.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("VidlyCore.Models.Customer", b =>
-                {
-                    b.HasOne("VidlyCore.Models.MembershipType", "MembershipType")
-                        .WithMany()
-                        .HasForeignKey("MembershipTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
