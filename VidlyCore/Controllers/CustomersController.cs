@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VidlyCore.Data;
 using VidlyCore.Models;
+using VidlyCore.ViewModels;
 
 namespace VidlyCore.Controllers
 {
@@ -16,6 +17,7 @@ namespace VidlyCore.Controllers
         {
             _ctx = ctx;   
         }
+
         // GET: Customers
         public IActionResult Index()
         {
@@ -23,6 +25,7 @@ namespace VidlyCore.Controllers
             return View(customers);
         }
         //[Route("Customers/Details/Id")]
+        // action to fetch details of a single customer
         public IActionResult Details(int id)
         {
             var customer = _ctx.Customers.Include(e => e.MembershipType).SingleOrDefault(c => c.Id == id);
@@ -33,11 +36,46 @@ namespace VidlyCore.Controllers
             return View(customer);
         }
 
+        // action to create new customer form
         public IActionResult New()
         {
-            return View();
+            var membershipTypes = _ctx.MembershipType.ToList();
+            var viewModel = new CustomerFormViewModel
+            {
+                MembershipTypes = membershipTypes
+            };
+            return View("CustomerForm", viewModel);
         }
-        
 
+        // action to process form
+        [HttpPost]
+        public IActionResult Save(Customer customer)
+        {
+            if(customer.Id == 0)
+            {
+                _ctx.Customers.Add(customer);
+            }
+            else
+            {
+                var customerInDb = _ctx.Customers.SingleOrDefault(e => e.Id == customer.Id);
+                customerInDb.Name = customer.Name;
+                customerInDb.BirthDate = customer.BirthDate;
+                customerInDb.MembershipType = customer.MembershipType;
+                customerInDb.IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter;
+            }
+            _ctx.SaveChanges();
+            return RedirectToAction("Index", "Customers");
+        }
+
+        public IActionResult Edit(int Id)
+        {
+            var customer = _ctx.Customers.SingleOrDefault(e => e.Id == Id);
+            var viewModel = new CustomerFormViewModel
+            {
+                Customer = customer,
+                MembershipTypes = _ctx.MembershipType.ToList()
+            };
+            return View("CustomerForm", viewModel);
+        }
     }
 }

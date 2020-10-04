@@ -34,12 +34,7 @@ namespace VidlyCore.Controllers
             };
             return View(viewModel);
         }
-
-        public IActionResult Edit(int Id)
-        {
-            return Content($"Id = {Id}");
-        }
-
+        
         public IActionResult Index()
         {
             var movies = _ctx.Movies.Include(x => x.Genre).ToList();
@@ -48,16 +43,62 @@ namespace VidlyCore.Controllers
             if (string.IsNullOrWhiteSpace(sortBy)) sortBy = "Name";*/
             //return Content($"pageIndex={pageIndex}&sortBy={sortBy}");
         }
+
+
        // [Route("movies/released/{year:regex(\\d{4})}/{month:regex(\\d{2}):range(1,12)}")]
         public IActionResult ByReleaseYear(int year, int month)
         {
             return Content($"{year}/{month}");
         }
+
+
         public IActionResult Details(int Id)
         {
             var movie = _ctx.Movies.Include(z => z.Genre).SingleOrDefault(e => e.Id == Id);
             if (movie == null) return NotFound();
             return View(movie);
+        }
+
+        // action for new form
+        public IActionResult New()
+        {
+            var genres = _ctx.Genre.ToList();
+            var model = new MovieFormViewModel
+            {
+                Genres = genres
+            };
+            return View("MovieForm", model);
+        }
+
+        [HttpPost]
+        public IActionResult Save(Movie movie)
+        {
+            if (movie.Id == 0)
+            {
+                _ctx.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _ctx.Movies.Single(c => c.Id == movie.Id);
+                movieInDb.Name = movie.Name;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.Genre = movie.Genre;
+                movieInDb.NumberInStock = movie.NumberInStock;
+            }
+            _ctx.SaveChanges();
+            return RedirectToAction("Index", "Movies");
+        }
+
+        //Method to edit movie form
+        public IActionResult Edit(int Id)
+        {
+            var movie = _ctx.Movies.SingleOrDefault(e => e.Id == Id);
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _ctx.Genre.ToList()
+            };
+            return View("MovieForm", viewModel);
         }
     }
 }
