@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using VidlyCore.ViewModels;
 
 namespace VidlyCore.Models
 {
@@ -16,6 +17,7 @@ namespace VidlyCore.Models
         public string Name { get; set; }
 
         [Display(Name = "Date of birth")]
+        [Min18IfAMember]
         public DateTime? BirthDate { get; set; }
 
         public bool IsSubscribedToNewsletter { get; set; }

@@ -5,7 +5,7 @@
 
 @{
     var formTitle = "Edit Customer";
-    if (Model.Customer == null)
+    if (Model.Customer == null )
     {
         formTitle = "New Customer";
     }
@@ -17,16 +17,21 @@
     <div class="form-group">
         <label asp-for="Customer.Name"></label>
         <input type="text" asp-for="Customer.Name" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label asp-for="Customer.BirthDate"></label>
-        <input type="text" asp-for="Customer.BirthDate" asp-format="{0:d MMM yyyy}" class="form-control" />
+        <span class="text-danger" asp-validation-for="Customer.Name"></span>
     </div>
     <div class="form-group">
         <label asp-for="Customer.MembershipTypeId"></label>
         <select class="form-control" asp-for="Customer.MembershipTypeId" asp-items="@(new SelectList(Model.MembershipTypes, "Id", "Name"))">
             <option>Select Membership Type</option>
         </select>
+        <span class="text-danger" asp-validation-for="Customer.MembershipTypeId"></span>
+
+    </div>
+    <div class="form-group">
+        <label asp-for="Customer.BirthDate"></label>
+        <input type="text" asp-for="Customer.BirthDate" asp-format="{0:d MMM yyyy}" class="form-control" />
+        <span class="text-danger" asp-validation-for="Customer.BirthDate"></span>
+
     </div>
     <div class="form-group form-check">
         <input type="checkbox" class="form-check-input" id="exampleCheck1" asp-for="Customer.IsSubscribedToNewsletter">
